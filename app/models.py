@@ -31,6 +31,8 @@ class Task(Base):
         DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
     )
 
-    # 기본 lazy 로딩(select). 목록을 만든 뒤 task마다 task.tags에 접근하면
-    # 태그 조회 쿼리가 task 개수만큼 따로 실행됩니다(N+1).
+    # 기본은 lazy 로딩(select)입니다. 단건 조회에는 이걸로 충분하므로
+    # 즉시 로딩은 모델이 아니라 쿼리에서 지정합니다.
+    # 여러 Task를 반환하는 조회는 N+1을 피하려고 반드시
+    # options(selectinload(Task.tags))를 붙입니다(예: task_service.list_tasks).
     tags = relationship("Tag", secondary=task_tags, lazy="select")
